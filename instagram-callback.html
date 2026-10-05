@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AutoClipAI · Instagram verbunden</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,Segoe UI,Arial,sans-serif}
+    body{margin:0;background:#0b0f17;color:#f5f7fb;display:grid;place-items:center;min-height:100vh;padding:24px}
+    .card{width:min(720px,100%);background:#121827;border:1px solid #28324a;border-radius:18px;padding:28px;box-shadow:0 20px 60px #0008}
+    h1{margin:0 0 10px;font-size:28px}.muted{color:#9da9bf;line-height:1.5}
+    textarea{width:100%;box-sizing:border-box;background:#090d15;color:#dfe7ff;border:1px solid #33415f;border-radius:12px;padding:14px;min-height:110px;resize:vertical}
+    button{margin-top:14px;background:#8b5cf6;color:white;border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer}
+    .ok{color:#67e8a5}.err{color:#ff7b8a}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1 id="title">Instagram Login abgeschlossen</h1>
+    <p id="text" class="muted">Kopiere die komplette URL und füge sie in AutoClipAI ein.</p>
+    <textarea id="value" readonly></textarea>
+    <button id="copy">URL kopieren</button>
+  </main>
+<script>
+const p = new URLSearchParams(location.search);
+const err = p.get('error');
+const code = p.get('code');
+const title = document.getElementById('title');
+const text = document.getElementById('text');
+const value = document.getElementById('value');
+value.value = location.href;
+if (err) {
+  title.textContent = 'Instagram Login fehlgeschlagen';
+  title.className = 'err';
+  text.textContent = p.get('error_description') || err;
+} else if (code) {
+  title.className = 'ok';
+  text.textContent = 'Freigabe erfolgreich. Kopiere diese URL zurück nach AutoClipAI. ID und Token ermittelt die App automatisch.';
+} else {
+  text.textContent = 'Kein Authorization Code gefunden. Starte den Instagram Login erneut aus AutoClipAI.';
+}
+document.getElementById('copy').onclick = async () => {
+  try { await navigator.clipboard.writeText(location.href); document.getElementById('copy').textContent = 'Kopiert ✓'; }
+  catch { value.select(); document.execCommand('copy'); document.getElementById('copy').textContent = 'Kopiert ✓'; }
+};
+</script>
+</body>
+</html>
